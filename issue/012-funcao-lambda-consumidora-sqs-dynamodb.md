@@ -22,24 +22,28 @@ Ao concluir esta Issue, deverá ser possível:
 ### 1. Preparação
 
 - [ ] Escolher o runtime suportado pelo FakeCloud e criar `backend/lambda/`.
-- [ ] Definir o contrato JSON da mensagem: campos obrigatórios, tipos e um identificador único que sirva de chave de idempotência.
+- [ ] Definir o contrato JSON da mensagem: campos obrigatórios, tipos, tamanho máximo e um identificador único que sirva de chave de idempotência.
 
 ### 2. Implementação
 
 - [ ] Escrever o handler: lê o lote de mensagens, valida cada payload contra o contrato, grava no DynamoDB sem duplicar (usando o identificador único) e sinaliza à SQS quais mensagens falharam.
+- [ ] Rejeitar payloads acima do tamanho máximo ou fora do schema antes de gravar.
 - [ ] Empacotar o código e criar a Lambda via Terraform.
 - [ ] Criar o event source mapping ligando a fila à Lambda, com tamanho de lote e relatório de falhas parciais definidos.
-- [ ] Passar nome da tabela e demais configurações por variáveis de ambiente.
+- [ ] Definir timeout da Lambda menor que o visibility timeout da fila (Issue 011).
+- [ ] Passar nome da tabela e demais configurações por variáveis de ambiente, sem segredos.
+- [ ] Usar reserved concurrency e retenção de logs se o FakeCloud suportar; caso contrário, registrar a limitação.
 
 ### 3. Segurança e boas práticas
 
 - [ ] Usar a role da Issue 008, sem permissões extras.
 - [ ] Não registrar dados sensíveis nos logs.
 - [ ] Rejeitar payloads inválidos antes de gravar.
+- [ ] Não passar segredos por variáveis de ambiente.
 
 ### 4. Testes e automação
 
-- [ ] Escrever testes unitários do handler cobrindo: payload válido, payload inválido e mensagem repetida.
+- [ ] Escrever testes unitários do handler cobrindo: payload válido, payload inválido, payload acima do limite e mensagem repetida.
 - [ ] Escrever um teste de integração: mensagem na fila gera item na tabela.
 
 ## Entrega
@@ -57,6 +61,7 @@ Este é o único ponto de verificação da Issue.
 - [ ] Mensagem válida vira item no DynamoDB.
 - [ ] Mensagem inválida acaba na DLQ.
 - [ ] Reprocessar a mesma mensagem não duplica dados.
+- [ ] O timeout da Lambda é menor que o visibility timeout da fila.
 - [ ] Nenhuma credencial ou informação sensível versionada.
 - [ ] Nada depende de alteração manual não documentada.
 - [ ] Evidências principais (outputs, prints ou logs) guardadas no PR ou em `docs/`.

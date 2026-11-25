@@ -26,11 +26,12 @@ Ao concluir esta Issue, deverá ser possível:
 
 - [ ] Criar a tabela com o modo de cobrança adequado.
 - [ ] Ativar TTL, se o modelo pedir.
-- [ ] Ativar criptografia e recuperação point-in-time em `prod`.
+- [ ] Ativar criptografia gerenciada pelo serviço (sem CMK).
+- [ ] Ativar recuperação point-in-time em `prod` se o FakeCloud suportar; caso contrário, registrar a limitação em `docs/limitations.md`.
 
 ### 3. Segurança e boas práticas
 
-- [ ] Dar acesso apenas às roles da Issue 008.
+- [ ] Dar acesso à role da Lambda (Issue 008); o acesso da role do backend é adicionado na Issue 013.
 - [ ] Ativar proteção contra deleção em `prod`.
 
 ### 4. Testes e automação
@@ -50,6 +51,7 @@ Este é o único ponto de verificação da Issue.
 
 - [ ] Os padrões de acesso planejados funcionam na tabela.
 - [ ] Proteção contra deleção ativa em `prod`.
+- [ ] Criptografia ativa; PITR ativo ou limitação registrada.
 - [ ] Nenhuma credencial ou informação sensível versionada.
 - [ ] Nada depende de alteração manual não documentada.
 - [ ] Evidências principais (outputs, prints ou logs) guardadas no PR ou em `docs/`.

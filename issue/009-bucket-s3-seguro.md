@@ -11,6 +11,7 @@ Ao concluir esta Issue, deverá ser possível:
 - O bucket recebe arquivos (uploads, artefatos) e dispara o fluxo assíncrono das Issues 011 a 013.
 - Serviço: S3.
 - Decisão: nome do bucket com prefixo `nimbus-<env>`; sem ACLs públicas.
+- Não usar KMS/CMK nesta fase: criptografia gerenciada pelo serviço. KMS fica fora de escopo por não haver AWS real.
 
 ## Pré-requisitos
 
@@ -24,19 +25,21 @@ Ao concluir esta Issue, deverá ser possível:
 
 ### 2. Implementação
 
-- [ ] Criar o bucket com versionamento e criptografia padrão.
+- [ ] Criar o bucket com versionamento e criptografia gerenciada pelo serviço (sem CMK).
+- [ ] Definir Object Ownership como `BucketOwnerEnforced` e desabilitar ACLs.
 - [ ] Bloquear todo acesso público.
-- [ ] Escrever a policy de bucket: quem pode ler e quem pode escrever, por prefixo, e negar acesso sem TLS.
+- [ ] Escrever a policy de bucket: negar acesso sem TLS, não usar `Principal: *` e conceder leitura/escrita por prefixo aos principais que já existem. Os grants para a role do backend são finalizados na Issue 013.
 - [ ] Configurar o ciclo de vida: expiração de versões antigas e do prefixo temporário, conforme definido na preparação.
 
 ### 3. Segurança e boas práticas
 
 - [ ] Proibir `Principal: *`.
 - [ ] Permitir `force_destroy` só em `dev`.
+- [ ] Não usar KMS/CMK; registrar a decisão de usar criptografia gerenciada.
 
 ### 4. Testes e automação
 
-- [ ] Escrever um script que envia e baixa um objeto de teste.
+- [ ] Escrever um script que envia e baixa um objeto de teste e verifica public access block, TLS-only e ausência de `Principal: *`.
 
 ## Entrega
 
@@ -52,6 +55,7 @@ Este é o único ponto de verificação da Issue.
 - [ ] Upload e download funcionam.
 - [ ] Duas versões do mesmo objeto são mantidas.
 - [ ] O bloqueio de acesso público está ativo.
+- [ ] A policy nega acesso sem TLS e não contém `Principal: *`.
 - [ ] Nenhuma credencial ou informação sensível versionada.
 - [ ] Nada depende de alteração manual não documentada.
 - [ ] Evidências principais (outputs, prints ou logs) guardadas no PR ou em `docs/`.

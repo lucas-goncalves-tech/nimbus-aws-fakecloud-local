@@ -10,7 +10,7 @@ Ao concluir esta Issue, deverá ser possível:
 
 - Transforma as regras de segurança das Issues anteriores em checagens repetíveis.
 - Ferramentas possíveis: `tflint`, `checkov` ou `tfsec`, `gitleaks`, testes próprios.
-- Limitação: análise estática verifica a configuração, não o comportamento real de rede.
+- Limitação: análise estática verifica a configuração, não o comportamento real de rede ou IAM. Testes comportamentais de autorização estão fora de escopo, pois o FakeCloud não enforça policies e não há AWS real.
 
 ## Pré-requisitos
 
@@ -26,8 +26,8 @@ Ao concluir esta Issue, deverá ser possível:
 
 - [ ] Criar `make security`, que roda todas as análises.
 - [ ] Configurar as ferramentas escolhidas.
-- [ ] Escrever testes próprios: sem `0.0.0.0/0` indevido, sem wildcard em IAM, bucket sem acesso público.
-- [ ] Criar `docs/security.md` com: controles aplicados, exceções aceitas (cada uma com seu motivo) e o que o emulador não consegue provar.
+- [ ] Escrever testes próprios: endpoint local, sem `0.0.0.0/0` indevido, sem wildcard em IAM, sem IAM user/access key, bucket sem acesso público e sem porta administrativa exposta.
+- [ ] Criar `docs/security.md` com: os três princípios (Secure by Design, Least Privilege, Environment Isolation), controles aplicados, exceções aceitas (cada uma com seu motivo) e o que o emulador não consegue provar.
 
 ### 3. Segurança e boas práticas
 
@@ -36,7 +36,7 @@ Ao concluir esta Issue, deverá ser possível:
 
 ### 4. Testes e automação
 
-- [ ] Criar em `tests/security/fixtures/` uma configuração propositalmente ruim (ex.: Security Group aberto, bucket público) que as análises devem barrar.
+- [ ] Criar em `tests/security/fixtures/` configurações propositalmente ruins (Security Group aberto, bucket público, IAM com wildcard, endpoint real) que as análises devem barrar.
 
 ## Entrega
 
@@ -52,8 +52,9 @@ Artefatos que deverão existir ao final da Issue:
 Este é o único ponto de verificação da Issue.
 
 - [ ] `make security` passa no código atual.
-- [ ] `make security` falha com a má configuração proposital.
+- [ ] `make security` falha com as más configurações propositais.
 - [ ] Toda exceção tem justificativa.
+- [ ] As checagens cobrem endpoint, IAM, bucket, Security Group, porta exposta e segredo.
 - [ ] Nenhuma credencial ou informação sensível versionada.
 - [ ] Nada depende de alteração manual não documentada.
 - [ ] Evidências principais (outputs, prints ou logs) guardadas no PR ou em `docs/`.
