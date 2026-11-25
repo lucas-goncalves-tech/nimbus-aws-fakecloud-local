@@ -11,7 +11,9 @@ Ao concluir esta Issue, deverá ser possível:
 
 - Fundação de rede da arquitetura: backend e Lambda ficam em subnets privadas; apenas o necessário em públicas.
 - Serviço envolvido: EC2 (plano de controle de VPC) no FakeCloud.
-- Limitação importante: o FakeCloud armazena a configuração de rede, mas não isola tráfego de verdade. Os testes provam que a configuração foi criada corretamente, não que o isolamento funciona.
+- Limitação importante: o FakeCloud armazena a configuração de rede, mas não isola tráfego de verdade. Os testes provam que a configuração foi criada corretamente, não que o isolamento funciona. Não haverá validação em AWS real; a limitação é aceita e registrada.
+- Subnet de dados separada é N/A: o DynamoDB é regional e não fica na VPC. Reavaliar apenas se entrar um banco relacional.
+- As subnets públicas existem como modelo da topologia; não há ALB nem endpoint público nesta fase.
 - Decisão: CIDRs distintos entre `dev` e `prod` para permitir peering futuro.
 
 ## Pré-requisitos
@@ -26,7 +28,7 @@ Ao concluir esta Issue, deverá ser possível:
 
 ### 2. Implementação
 
-- [ ] Criar `modules/network` com a VPC e subnets públicas e privadas em duas zonas, recebendo CIDRs e zonas por variável e devolvendo os IDs nos outputs.
+- [ ] Criar `modules/network` com a VPC e subnets públicas e privadas em duas zonas, recebendo CIDRs e zonas por variável e devolvendo os IDs nos outputs. As zonas devem vir de `data.aws_availability_zones` e o módulo deve exigir pelo menos duas.
 - [ ] Ativar DNS support e hostnames.
 - [ ] Aplicar tags padronizadas (`Project`, `Environment`, `ManagedBy`).
 - [ ] Chamar o módulo em `dev` e `prod`.
@@ -35,6 +37,8 @@ Ao concluir esta Issue, deverá ser possível:
 
 - [ ] Desativar IP público automático nas subnets privadas.
 - [ ] Não usar a VPC default.
+- [ ] Não usar NACLs nesta fase; registrar a decisão em `docs/network.md`.
+- [ ] Não implementar VPC Flow Logs; registrar como limitação aceita.
 
 ### 4. Testes e automação
 
@@ -53,6 +57,7 @@ Artefatos que deverão existir ao final da Issue:
 Este é o único ponto de verificação da Issue.
 
 - [ ] VPC e subnets existem em `dev` e `prod` com os CIDRs planejados.
+- [ ] IP público automático desativado nas subnets privadas.
 - [ ] Limitação de não-enforcement de rede registrada em `docs/limitations.md`.
 - [ ] Nenhuma credencial ou informação sensível versionada.
 - [ ] Nada depende de alteração manual não documentada.

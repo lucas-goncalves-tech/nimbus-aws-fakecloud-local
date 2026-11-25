@@ -12,7 +12,7 @@ Ao concluir esta Issue, deverá ser possível:
 
 - Define quais subnets são realmente públicas ou privadas: o nome da subnet não basta, o que importa é a rota.
 - Serviços: EC2 (IGW, route tables).
-- Decisão: não criar NAT Gateway nesta fase (custo e complexidade); documentar como alternativa para produção real.
+- Decisão: não criar NAT Gateway nem VPC endpoints nesta fase. As subnets privadas ficam sem saída para a internet; isso é uma limitação aceita do projeto local, registrada em `docs/limitations.md`. Em AWS real seria necessário NAT ou endpoints, mas isso está fora de escopo.
 
 ## Pré-requisitos
 
@@ -34,10 +34,11 @@ Ao concluir esta Issue, deverá ser possível:
 
 - [ ] Manter as subnets privadas sem rota para o IGW.
 - [ ] Evitar rotas e associações implícitas (como a route table principal da VPC) que deixem uma subnet pública sem querer.
+- [ ] Registrar que `0.0.0.0/0 → NAT` não se aplica a este projeto: não há NAT e essa rota não é usada como justificativa de exposição.
 
 ### 4. Testes e automação
 
-- [ ] Escrever um teste que falha se uma subnet privada tiver rota para o IGW.
+- [ ] Escrever um teste que falha se uma subnet privada tiver rota para o IGW ou para um NAT.
 
 ## Entrega
 
@@ -52,6 +53,7 @@ Este é o único ponto de verificação da Issue.
 
 - [ ] As rotas de cada route table batem com a tabela planejada.
 - [ ] O teste de rotas passa.
+- [ ] Ausência de NAT e de VPC endpoints registrada como limitação aceita.
 - [ ] Nenhuma credencial ou informação sensível versionada.
 - [ ] Nada depende de alteração manual não documentada.
 - [ ] Evidências principais (outputs, prints ou logs) guardadas no PR ou em `docs/`.

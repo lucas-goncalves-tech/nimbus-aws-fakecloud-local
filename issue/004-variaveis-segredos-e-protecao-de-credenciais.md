@@ -10,9 +10,10 @@ Ao concluir esta Issue, deverá ser possível:
 
 ## Contexto
 
-- Mesmo com credenciais fictícias, o hábito correto precisa existir desde o início, pois o código poderá ir para a AWS real.
+- Mesmo com credenciais fictícias e sem AWS real, o hábito correto precisa existir desde o início.
 - Ferramentas: `variables.tf` com `type`, `description`, `validation`; `sensitive = true`; `gitleaks` ou similar como hook pre-commit.
 - Decisão: valores por ambiente em `*.tfvars`; segredos apenas por variável de ambiente (`TF_VAR_*`).
+- Não haverá IAM user nem access key de longo prazo. MFA, SSO e OIDC são não-objetivo, pois não há AWS real nem identidade humana na nuvem.
 
 ## Pré-requisitos
 
@@ -30,15 +31,16 @@ Ao concluir esta Issue, deverá ser possível:
 - [ ] Marcar as sensíveis com `sensitive = true`.
 - [ ] Criar `.env.example` e `*.tfvars.example` com todas as chaves esperadas e valores de exemplo claramente fictícios.
 - [ ] Instalar um hook pre-commit que bloqueia o commit ao encontrar padrões de segredo (chaves de acesso, tokens, senhas).
-- [ ] Escrever `docs/secrets.md` respondendo: quais segredos o projeto tem, onde cada um vive em `dev`, quem pode lê-los e como isso mudaria em produção real (ex.: Secrets Manager).
+- [ ] Escrever `docs/secrets.md` respondendo: quais segredos o projeto tem, onde cada um vive em `dev`, quem pode lê-los e por que as credenciais são fictícias. Registrar o que seria necessário se houvesse AWS real, deixando claro que está fora de escopo.
 
 ### 3. Segurança e boas práticas
 
-- [ ] Colocar `.env`, `*.tfvars` reais e state no `.gitignore`.
+- [ ] Colocar `.env`, `*.tfvars` reais, state e `plan.out` no `.gitignore`.
+- [ ] Tratar state e plan como artefatos sensíveis: eles podem conter valores que não devem ser versionados.
 
 ### 4. Testes e automação
 
-- [ ] Escrever um script que roda a varredura de segredos no repositório inteiro, incluindo o histórico do Git, para uso local e no CI.
+- [ ] Escrever um script que roda a varredura de segredos no repositório inteiro, incluindo o histórico do Git e artefatos locais (state, `plan.out`, pacotes), para uso local e no CI.
 
 ## Entrega
 
@@ -56,6 +58,7 @@ Este é o único ponto de verificação da Issue.
 - [ ] Commit com segredo falso é bloqueado pelo hook.
 - [ ] Valor inválido é rejeitado pela `validation`.
 - [ ] Varredura do histórico não encontra segredos.
+- [ ] State e `plan.out` não estão versionados.
 - [ ] Nenhuma credencial ou informação sensível versionada.
 - [ ] Nada depende de alteração manual não documentada.
 - [ ] Evidências principais (outputs, prints ou logs) guardadas no PR ou em `docs/`.
