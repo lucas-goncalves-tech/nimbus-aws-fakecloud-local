@@ -1,0 +1,10 @@
+import z from "zod";
+import { zodSlugValidator } from "../../../shared/validators/common-fields.validator";
+
+export const lessonSlugParamsRequest = z.object({
+  courseSlug: zodSlugValidator("courseSlug"),
+  lessonSlug: zodSlugValidator("lessonSlug"),
+});
+
+export type LessonSlugParamsRequest = z.infer<typeof lessonSlugParamsRequest>;
+
